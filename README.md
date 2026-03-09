@@ -196,6 +196,9 @@ The `ai-run.sh` script assembles context bundles for each AI agent.
 
 ---
 
+complete flow https://github.com/mohamedhamada1/ai-engineering-workflow/blob/main/docs/AI_ENGINEERING_SYSTEM.md
+
+
 ## License
 
 MIT
