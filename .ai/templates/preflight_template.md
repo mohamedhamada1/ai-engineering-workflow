@@ -67,6 +67,18 @@ Failures: [list any pre-existing failures]
 
 ---
 
+## Assumptions
+
+[Explicit assumptions made during preflight that downstream steps must be aware of. These persist into the implementation and review artifacts.]
+
+| Assumption | Risk If Wrong | Affects |
+|------------|--------------|---------|
+| [assumption description] | [what breaks or degrades] | [which files, behaviors, or checklist items] |
+
+> If no assumptions: write "None — all plan references verified against repo."
+
+---
+
 ## Risk Flags
 
 [Any non-blocking issues discovered during preflight that should be noted.]

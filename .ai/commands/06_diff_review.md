@@ -74,11 +74,40 @@ Common invariants to check:
 - API stability (no unplanned API changes)
 - Test coverage (new behavior has tests)
 
-### Step 6: Issue Verdict
+### Step 6: Spec Checklist Conformance
 
-**SAFE** — All changes are approved, no invariants violated, no unexpected files.
+Read the spec's `## Verification Checklist` section. For each checklist item:
 
-**WARN** — Minor unexpected changes that are explainable and low-risk. List them.
+1. Determine if it is satisfied, partially satisfied, or missing in the implementation.
+2. Provide evidence (file path, test name, grep match) for satisfied items.
+3. Explain what is missing for partial or missing items.
+4. List any assumptions the executor made that affected checklist outcomes.
+
+Report as:
+
+```
+## Spec Checklist Conformance
+
+### Satisfied
+- [x] item — evidence
+
+### Partial
+- [ ] item — what exists vs what is missing
+
+### Missing
+- [ ] item — not found
+
+### Assumptions Detected
+- assumption description
+
+Checklist Conformance Result: PASS / PARTIAL / FAIL
+```
+
+### Step 7: Issue Verdict
+
+**SAFE** — All changes are approved, no invariants violated, no unexpected files, checklist conformance PASS.
+
+**WARN** — Minor unexpected changes that are explainable and low-risk. List them. Checklist conformance may be PARTIAL.
 
 **UNSAFE** — Any of the following:
 - Protected file was modified
@@ -86,6 +115,7 @@ Common invariants to check:
 - Unplanned dependency added
 - Invariant violation detected
 - Significant changes outside approved scope
+- Checklist conformance FAIL (multiple missing items)
 
 ---
 

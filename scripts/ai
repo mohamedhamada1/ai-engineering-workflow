@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# =========================================================
+# ai — Short command wrapper for ai-run.sh
+#
+# Usage:
+#   ai start 7.15          → ai-run.sh --stage-start 7.15
+#   ai exec                → ai-run.sh --stage-execute
+#   ai done 7.15           → ai-run.sh --complete-stage 7.15
+#   ai status              → ai-run.sh --stage-status
+#   ai check               → ai-run.sh --verify-conformance
+#   ai gpt                 → ai-run.sh --chatgpt --compact (file + clipboard)
+#   ai gpt full             → ai-run.sh --chatgpt --full
+#   ai gemini              → ai-run.sh --gemini --full
+#   ai review              → ai-run.sh --post-review
+#   ai sync                → ai-run.sh --reality-sync
+#   ai diff                → ai-run.sh --diff-evidence
+#   ai import file.md      → ai-run.sh --import-chatgpt file.md
+#   ai import --paste      → ai-run.sh --import-chatgpt --paste
+#   ai revise "feedback"   → ai-run.sh --stage-revise "feedback"
+#   ai verify              → ai-run.sh --verify-stage --quick
+#   ai verify full         → ai-run.sh --verify-stage --full
+#   ai selftest            → ai-engine-selftest.sh
+#   ai help                → show this help
+#
+# Install:
+#   ln -sf "$(pwd)/scripts/ai" /usr/local/bin/ai
+#   # or add to .zshrc:
+#   alias ai='./scripts/ai'
+# =========================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+RUN="$SCRIPT_DIR/ai-run.sh"
+
+CMD="${1:-help}"
+shift 2>/dev/null || true
+
+case "$CMD" in
+  # --- Stage lifecycle ---
+  start)      "$RUN" --stage-start "$@" ;;
+  exec|run)   "$RUN" --stage-execute "$@" ;;
+  done|complete) "$RUN" --complete-stage "$@" ;;
+  status|s)   "$RUN" --stage-status "$@" ;;
+  dashboard|d) "$RUN" --stage-status --all "$@" ;;
+  revise)     "$RUN" --stage-revise "$@" ;;
+  install)    "$SCRIPT_DIR/ai-install.sh" "$@" ;;
+
+  # --- Context bundles ---
+  gpt|chatgpt)
+    style="${1:-compact}"
+    shift 2>/dev/null || true
+    case "$style" in
+      full)    "$RUN" --chatgpt --full "$@" ;;
+      compact) "$RUN" --chatgpt --compact "$@" ;;
+      paths)   "$RUN" --chatgpt --paths "$@" ;;
+      *)       "$RUN" --chatgpt --compact "$@" ;;
+    esac
+    ;;
+  gemini)     "$RUN" --gemini --full "$@" ;;
+  claude)     "$RUN" --claude --full "$@" ;;
+
+  # --- Verification ---
+  check)      "$RUN" --verify-conformance "$@" ;;
+  verify)
+    style="${1:-quick}"
+    shift 2>/dev/null || true
+    case "$style" in
+      full) "$RUN" --verify-stage --full "$@" ;;
+      *)    "$RUN" --verify-stage --quick "$@" ;;
+    esac
+    ;;
+  selftest)   "$SCRIPT_DIR/ai-engine-selftest.sh" "$@" ;;
+
+  # --- Review & sync ---
+  review)     "$RUN" --post-review "$@" ;;
+  sync)       "$RUN" --reality-sync "$@" ;;
+  diff)       "$RUN" --diff-evidence "$@" ;;
+  bundle)     "$RUN" --review-bundle "$@" ;;
+
+  # --- Import ---
+  import)     "$RUN" --import-chatgpt "$@" ;;
+
+  # --- Context update ---
+  context)    "$RUN" --update-context "$@" ;;
+
+  # --- Claude manual steps ---
+  preflight)  "$RUN" --claude-preflight "$@" ;;
+  implement)  "$RUN" --claude-implement "$@" ;;
+  stabilize)  "$RUN" --claude-stabilize "$@" ;;
+
+  # --- Help ---
+  help|--help|-h|"")
+    cat <<'HELP'
+ai — Stage Workflow Shortcuts
+
+  LIFECYCLE
+    ai start <id>       Start new stage (branch + import + validate artifacts)
+    ai exec             Execute full pipeline (preflight → implement → verify → commit)
+    ai done <id>        Complete stage (merge to main)
+    ai status           Show current stage status
+    ai dashboard        Visual overview of ALL stages with progress bar
+    ai revise "msg"     Address reviewer feedback
+
+  CONTEXT BUNDLES
+    ai gpt              ChatGPT compact context → file + clipboard (~69KB)
+    ai gpt full         ChatGPT full context → file + clipboard (~153KB)
+    ai gemini           Gemini full context → file + clipboard
+    ai claude           Claude full context
+
+  VERIFICATION
+    ai check            Run conformance verification (nested route detection)
+    ai verify           Quick verify (artifacts + protected files)
+    ai verify full      Full verify (build + test + artifacts)
+    ai selftest         Engine self-test (26 checkpoints)
+
+  REVIEW & SYNC
+    ai review           Generate post-review bundle → v{N}/ folder
+    ai sync             Generate reality sync → joins current v{N}/ folder
+    ai diff             Show all changes + protected file check
+    ai bundle           Snapshot current state
+
+  IMPORT
+    ai import file.md   Import ChatGPT output (auto-fixes spec headings)
+    ai import --paste   Import from clipboard (auto-fixes spec headings)
+
+  SETUP
+    ai install          One-time setup (alias + autocompletion + tool check)
+
+  OTHER
+    ai context          Generate/apply context refresh
+    ai preflight        Claude preflight only
+    ai implement        Claude implementation only
+    ai help             This help
+HELP
+    ;;
+
+  *)
+    echo "Unknown command: $CMD" >&2
+    echo "Run 'ai help' for usage." >&2
+    exit 1
+    ;;
+esac

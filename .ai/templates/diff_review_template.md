@@ -84,6 +84,38 @@
 
 ---
 
+## Spec Checklist Conformance
+
+Evaluate each item from the spec's Verification Checklist against the actual implementation.
+
+### Mandatory Items
+
+| Checklist Item | Status | Evidence |
+|----------------|--------|----------|
+| [item from spec] | SATISFIED / PARTIAL / MISSING | [file path, test name, grep match, or code snippet] |
+| [item from spec] | SATISFIED | `apps/api/.../ProviderCallbackRoutes.kt` |
+| [item from spec] | SATISFIED | `ProviderCallbackServiceTest.kt::duplicate_callback_is_ignored` |
+
+### Optional / Quality Items
+
+| Checklist Item | Status | Evidence |
+|----------------|--------|----------|
+| [item from spec] | SATISFIED / SKIPPED | [evidence or reason skipped] |
+
+### Assumptions Made During Implementation
+
+| Assumption | Risk If Wrong | Affected Checklist Items |
+|------------|--------------|------------------------|
+| [assumption description] | [what breaks] | [which items it affects] |
+
+**Checklist Conformance Result:** PASS / PARTIAL / FAIL
+
+> **PASS** = all mandatory items satisfied
+> **PARTIAL** = some mandatory items partial or missing, but no safety violations
+> **FAIL** = mandatory safety/invariant items missing or violated
+
+---
+
 ## Required Actions
 
 [If WARN or UNSAFE, list specific actions required before proceeding.]

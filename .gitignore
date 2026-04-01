@@ -2,3 +2,10 @@
 *.swp
 *.swo
 .env
+.env.*
+.idea/
+tmp/
+.ai/exports/
+.ai/execute_checkpoint
+.ai/sessions/
+*.pdf
