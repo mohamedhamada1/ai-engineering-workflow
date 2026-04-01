@@ -12,6 +12,8 @@
 
 [One paragraph summarizing what will be implemented and in what order. This gives Claude a mental model before reading the steps.]
 
+> **Checklist Preservation Rule:** This plan is derived from the spec and must preserve all Verification Checklist items from the spec. The plan may sequence work, but it may not silently drop required checklist items. Every checklist item must map to at least one implementation step.
+
 ---
 
 ## Pre-Implementation Checklist

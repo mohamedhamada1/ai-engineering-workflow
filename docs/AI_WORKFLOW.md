@@ -1,254 +1,224 @@
-# AI Engineering Workflow — Feature Lifecycle
+# AI Engineering Workflow
 
-This document defines the standard feature lifecycle used in the AI Engineering Workflow system.
+This document defines the standard AI-assisted engineering workflow used in the Supply Orchestration SDK repository.
 
-Every feature — regardless of size — follows the same ordered stages. Skipping stages is not permitted.
+The workflow ensures that AI-driven development remains:
 
----
+- safe for SDK/platform code
+- compatible with existing architecture
+- strictly scoped
+- reproducible
+- stage-driven according to the roadmap
 
-## 1. Architecture Discussion
-
-**Owner:** Engineer + ChatGPT
-**Input:** Feature goal (one paragraph written by the engineer)
-**Output:** Architectural decision
-
-Before any spec is written, the engineer and ChatGPT discuss the feature at the architecture level:
-
-- What problem does this feature solve?
-- Where does it belong in the existing architecture?
-- What modules, models, and abstractions are involved?
-- Are there any invariants or constraints that limit the design?
-- What is the minimal viable implementation?
-
-**Rule:** Architecture discussions must happen before spec writing. Never skip directly to implementation.
+This workflow is optimized for platform SDK development and staged architecture execution.
 
 ---
 
-## 2. Spec Creation
+# 1. Core Philosophy
 
-**Owner:** ChatGPT
-**Input:** Architecture decision + AI Brain
-**Output:** `spec.md` stored in `.ai/specs/`
-**Template:** `.ai/templates/spec_template.md`
+The Supply Orchestration SDK uses AI to accelerate development, but all AI execution must follow strict discipline.
 
-ChatGPT produces a detailed feature specification:
+Key principles:
 
-- Feature name and stage number
-- Problem statement
-- Acceptance criteria (testable)
-- Scope — what is included
-- Out of scope — what is explicitly excluded
-- File list (files to create or modify)
-- Protected files (must not be touched)
-- Core invariants for this feature
-- Open questions or risks
+1. Architecture first
+2. Ground against the real repository
+3. Execute narrowly
+4. Review diffs before fixing tests
+5. Stabilize separately
+6. Audit against invariants
+7. Update project artifacts consistently
 
-**Rule:** The spec defines the contract. Implementation must match the spec. Changes to scope require a spec revision and re-review.
+AI agents are assistants, not autonomous architects.
 
 ---
 
-## 3. Plan Creation
+# 2. Tool Roles
 
-**Owner:** ChatGPT
-**Input:** Approved spec + AI Brain
-**Output:** `plan.md` stored in `.ai/plans/`
-**Template:** `.ai/templates/plan_template.md`
+## ChatGPT — Architect
 
-ChatGPT produces a step-by-step implementation plan:
+Responsibilities:
 
-- Ordered list of implementation steps
-- For each step: file path, what to add/change, why
-- Test plan: what tests to write or update
-- Verification commands (format, analyze, test)
+- feature design
+- architecture discussion
+- risk analysis
+- specification creation
+- implementation plan creation
+- workflow orchestration
+- final architectural review
 
-**Rule:** The plan must be deterministic enough for Claude to execute without making architectural decisions.
+ChatGPT defines the work, but does not execute repository edits.
 
----
+## Gemini — Red Team Reviewer
 
-## 4. Gemini Review
+Responsibilities:
 
-**Owner:** Gemini
-**Input:** Spec + Plan + AI Brain
-**Output:** GO or NO-GO with written rationale
+- challenge architectural assumptions
+- detect hidden risks
+- verify scope boundaries
+- verify roadmap alignment
+- confirm backward compatibility
+- review spec and plan before implementation
 
-Gemini reviews the spec and plan against:
+Gemini acts as the architectural gatekeeper.
 
-- Architecture consistency
-- Invariant protection
-- Scope boundaries
-- Roadmap alignment
-- Backward compatibility
-- Known issues
+## Claude — Repository Executor
 
-**Rule:** Implementation does not begin until Gemini issues a GO. A NO-GO returns the spec/plan to ChatGPT for revision.
+Responsibilities:
 
----
+- preflight grounding
+- feature implementation
+- diff review
+- stabilization
+- PR compliance check
 
-## 5. Preflight Grounding
+Claude must not modify architecture or expand scope.
 
-**Owner:** Claude
-**Input:** Approved spec + plan + real repository
-**Output:** GO or NO-GO with grounding report
-**Command:** `.ai/commands/05_preflight_grounding.md`
-**Template:** `.ai/templates/preflight_template.md`
-
-Claude reads the actual repository to verify:
-
-- All files in the approved scope exist at the expected paths
-- File contents are consistent with the plan's assumptions
-- No symbol renames or API mismatches
-- Protected files are not in the scope list
-- No pre-existing failures that would block the feature
-
-**Rule:** Claude does not write a single line of code until preflight passes. A NO-GO stops execution completely.
+Claude executes only approved spec + plan.
 
 ---
 
-## 6. Implementation
+# 3. Canonical Workflow
 
-**Owner:** Claude
-**Input:** Approved plan + preflight report
-**Output:** Code changes
-**Command:** `.ai/commands/02_implement_feature.md`
+Every feature follows this lifecycle:
 
-Claude executes the plan step by step:
-
-- Edits only files in the approved scope
-- Does not refactor unrelated code
-- Does not add features not in the plan
-- Does not change architecture
-- Makes small, verifiable edits
-- Runs `format` and `analyze` after each logical unit of work
-
-**Rule:** If a required change would affect a file outside the approved scope, Claude stops and reports — it does not self-approve scope expansions.
+1. Architecture discussion
+2. Spec creation
+3. Plan creation
+4. Gemini review
+5. Preflight grounding
+6. Implementation
+7. Diff review
+8. Stabilization
+9. PR check
+10. Final architectural review
+11. Merge and artifact update
 
 ---
 
-## 7. Diff Review
+# 4. Workflow Rules
 
-**Owner:** Claude
-**Input:** Git diff of implementation
-**Output:** Safety assessment report
-**Command:** `.ai/commands/06_diff_review.md`
-**Template:** `.ai/templates/diff_review_template.md`
+## Cardinal Rules
 
-Claude reviews its own diff against:
+1. Never skip Gemini review.
+2. Never skip preflight grounding.
+3. Never expand scope mid-implementation.
+4. Never mix stabilization with new feature work.
+5. Always update repository memory files after merge.
 
-- Approved file list (no unexpected files changed)
-- Protected file list (no protected files touched)
-- Invariant checklist (no invariants violated)
-- API surface (no unplanned public API changes)
-- Dependency list (no new dependencies introduced)
-
-**Rule:** Any unexpected change in the diff is flagged before stabilization begins.
-
----
-
-## 8. Stabilization
-
-**Owner:** Claude
-**Input:** Test failures + diff review report
-**Output:** Fixed code
-**Command:** `.ai/commands/03_stabilize_feature.md`
-**Template:** `.ai/templates/stabilize_template.md`
-
-Claude fixes compilation errors and test failures:
-
-- Analyzes the root cause of each failure
-- Fixes only what is broken
-- Does not introduce new features during stabilization
-- Runs the full verification suite after each fix
-
-**Rule:** Stabilization is separate from implementation. Do not mix new feature work with bug fixes.
-
----
-
-## 9. PR Check
-
-**Owner:** Claude
-**Input:** Full git diff
-**Output:** PR scope audit
-**Command:** `.ai/commands/04_pr_check.md`
-
-Claude performs a final audit:
-
-- Every changed file was in the approved scope
-- No protected files were modified
-- No unplanned API changes
-- No unplanned dependency changes
-- All tests pass
-- Format and analyze are clean
-
-**Output:** Pass or Fail. If Fail, Claude lists specific violations.
-
----
-
-## 10. Final Architectural Review
-
-**Owner:** ChatGPT
-**Input:** PR diff + implementation notes
-**Output:** Architectural approval or revision request
-
-ChatGPT reviews:
-
-- Does the implementation match the spec?
-- Are there any architectural drift issues?
-- Are there any risks that should be captured in `KNOWN_ISSUES.md`?
-- Should the `AI_REPO_BRAIN.md` be updated to reflect new architecture?
-
----
-
-## 11. Merge and Artifact Update
-
-**Owner:** Engineer
-**Input:** Architectural approval
-**Actions:**
-- Merge PR
-- Update `ROADMAP.md` (mark stage complete)
-- Update `CURRENT_STAGE.md` (set next stage)
-- Update `TEST_REPORT.md` (record final test state)
-- Update `KNOWN_ISSUES.md` (close resolved risks)
-- Update `AI_REPO_BRAIN.md` if architecture changed
-
----
-
-## Workflow Rules
-
-### The Cardinal Rules
-
-1. **Never skip Gemini review.** Gemini must approve before Claude implements.
-2. **Never skip preflight grounding.** Claude reads the real repo before touching it.
-3. **Never expand scope mid-implementation.** Stop and report if scope needs to change.
-4. **Never mix stabilization with new features.** Fix first, then add.
-5. **Always update brain files after merge.** The AI Brain must reflect current reality.
-
-### Commit Discipline
-
-- Branch naming: `feat/<short-name>` or `fix/<short-name>`
-- Commit early and often (small, verifiable commits)
-- Commit message format: `<type>: <short description>` (e.g., `feat: add session analysis context`)
-- Never force-push without explicit engineer approval
-
-### Definition of Done
+## Definition of Done
 
 A feature is done when:
 
-- [ ] `format` passes
-- [ ] `analyze` / `lint` passes
-- [ ] All tests pass
-- [ ] No changes outside approved scope
-- [ ] PR summary includes: what, why, risks, tests run
-- [ ] Brain files updated
+- format passes
+- analyze/lint passes
+- tests pass
+- no changes exist outside approved scope
+- architecture remains aligned with spec and plan
+- roadmap and stage artifacts are updated
 
 ---
 
-## Handling Workflow Violations
+# 5. Mandatory Execution Flow
 
-| Violation | Response |
-|-----------|----------|
-| Gemini not consulted | Revert implementation; run Gemini review |
-| Preflight skipped | Stop; run preflight; address NO-GO items |
-| Scope expanded without approval | Revert out-of-scope changes |
-| Protected file modified | Revert immediately |
-| Tests broken by stabilization | Revert stabilization changes; diagnose separately |
-| Brain files not updated | Update before marking stage complete |
+All stage work must follow this sequence:
+
+1. Spec (with Verification Checklist)
+2. Preflight Clarification Check
+3. Plan
+4. Implementation
+5. Conformance Verification
+6. Diff Review
+7. Stabilization
+8. PR Check
+9. Final Architectural Review
+10. Merge and Artifact Update
+
+Implementation must not begin until the executor has emitted a Preflight Clarification Check.
+
+Plans drive execution order, but specs define required behavior, clarification policy, and conformance targets.
+
+---
+
+# 6. Preflight Clarification Check
+
+Before implementation, the executor (Claude) must emit a Preflight Clarification Check as the first output.
+
+## Required Output
+
+```
+## Preflight Clarification Check
+
+Status: READY | READY_WITH_ASSUMPTIONS | NEEDS_CLARIFICATION | BLOCKED
+
+### Questions
+(grouped, high-impact only — max 5)
+
+### Assumptions
+(explicit list of assumptions being made)
+
+### Risk If Assumptions Are Wrong
+(what breaks or degrades)
+```
+
+## When to Ask Questions
+
+Questions are allowed only when ambiguity materially affects:
+
+- correctness
+- safety
+- architecture
+- shared contracts
+- migrations
+- tests or acceptance criteria
+
+Questions must be grouped and high-impact only.
+Default maximum: 5 questions per clarification round.
+
+## When to Proceed Without Asking
+
+The executor may proceed with `READY_WITH_ASSUMPTIONS` when:
+
+- the spec's Preflight Clarification Intent allows assumption-driven continuation
+- the risk of wrong assumptions is low (no shared contracts, no migrations, no public API changes)
+- assumptions are explicitly stated in the check output
+
+## When to Block
+
+The executor must emit `BLOCKED` when:
+
+- required artifacts are missing (spec, plan, review)
+- spec contradicts plan
+- ambiguity affects shared_contracts or public API surface
+- no reasonable assumption can be made
+
+---
+
+# 7. Verification Checklist
+
+Every spec must include a `## Verification Checklist` section with machine-friendly checkbox items.
+
+## Purpose
+
+The Verification Checklist is the minimum conformance target for:
+
+- implementation (executor must satisfy all items)
+- diff review (reviewer must check all items against code)
+- post-review verification (conformance script checks for section presence)
+
+## Required Categories
+
+Each checklist must include items under:
+
+- **Required Artifacts** — files, endpoints, components that must exist
+- **Core Behavior** — functional requirements that must be implemented
+- **Safety / Invariants** — constraints that must be preserved
+- **Tests** — test coverage expectations
+
+## Conformance Reporting
+
+Reviews must explicitly report:
+
+- satisfied items (checked)
+- partially satisfied items (with explanation)
+- missing items (with explanation)
+- assumptions used by the executor during implementation

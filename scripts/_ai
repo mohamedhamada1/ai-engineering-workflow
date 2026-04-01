@@ -1,0 +1,83 @@
+#compdef ai
+# Zsh completion for the `ai` workflow command
+# Install: cp scripts/_ai ~/.zsh/completions/_ai && autoload -Uz compinit && compinit
+# Or:      fpath+=("$(pwd)/scripts"); compinit
+
+_ai() {
+  local -a commands
+  commands=(
+    'start:Start new stage (branch + import artifacts)'
+    'exec:Execute full pipeline (preflight → implement → verify)'
+    'done:Complete stage (merge to main)'
+    'complete:Complete stage (alias for done)'
+    'dashboard:Visual overview of ALL stages with progress bar'
+    'install:One-time setup (alias + autocompletion + tool check)'
+    'status:Show current stage status'
+    'revise:Address reviewer feedback'
+    'gpt:ChatGPT context bundle (compact by default)'
+    'gemini:Gemini context bundle'
+    'claude:Claude context bundle'
+    'check:Run conformance verification'
+    'verify:Quick verify (artifacts + protected files)'
+    'selftest:Engine self-test (26 checkpoints)'
+    'review:Generate post-review bundle'
+    'sync:Generate reality sync snapshot'
+    'diff:Show all changes + protected file check'
+    'bundle:Snapshot current state'
+    'import:Import ChatGPT output'
+    'context:Generate/apply context refresh'
+    'preflight:Claude preflight only'
+    'implement:Claude implementation only'
+    'stabilize:Claude stabilization only'
+    'help:Show help'
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'command' commands
+    return
+  fi
+
+  case "${words[2]}" in
+    start|done|complete)
+      # Suggest stage IDs from CURRENT_STAGE.md or recent git branches
+      local -a stages
+      if [[ -f CURRENT_STAGE.md ]]; then
+        local current_id
+        current_id=$(awk '/^Stage: /{print $2}' CURRENT_STAGE.md 2>/dev/null)
+        [[ -n "$current_id" ]] && stages+=("$current_id")
+      fi
+      # Add recent stage branches
+      local -a branch_stages
+      branch_stages=($(git branch --list 'feat/stage-*' 2>/dev/null | sed 's|.*feat/stage-||' | head -10))
+      stages+=("${branch_stages[@]}")
+      _describe 'stage-id' stages
+      ;;
+    gpt|chatgpt)
+      local -a styles=('compact:Trimmed bundle (~69KB, fits paste)' 'full:Complete bundle (~153KB, use as file)')
+      _describe 'style' styles
+      ;;
+    verify)
+      local -a modes=('full:Build + test + artifacts' 'quick:Artifacts + protected files only')
+      _describe 'mode' modes
+      ;;
+    import)
+      _files -g '*.md'
+      local -a opts=('--paste:Import from clipboard')
+      _describe 'option' opts
+      ;;
+    exec)
+      local -a opts=('--resume:Resume from last checkpoint' '--from:Restart from step N')
+      _describe 'option' opts
+      ;;
+    done|complete)
+      local -a opts=('--dry-run:Preview only, do not merge')
+      _describe 'option' opts
+      ;;
+    start)
+      local -a opts=('--no-push:Skip pushing to remote' '--paste:Import from clipboard')
+      _describe 'option' opts
+      ;;
+  esac
+}
+
+_ai "$@"

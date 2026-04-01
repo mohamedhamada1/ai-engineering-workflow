@@ -1,124 +1,186 @@
-# AI Engineering Workflow
+# AI Engineering Workflow v2
 
-A reusable, multi-agent AI engineering system for real software development.
+A production-hardened, multi-agent AI engineering system for real software development.
 
-This repository provides the structure, tooling, documentation, and command templates needed to orchestrate multiple AI agents — ChatGPT, Gemini, and Claude — in a disciplined, staged software development workflow.
+Orchestrate **ChatGPT** (Architect), **Gemini** (Gatekeeper), and **Claude** (Executor) in a disciplined, stage-driven development workflow with automated conformance verification, artifact versioning, and operational intelligence.
 
----
-
-## What Is the AI Engineering Workflow?
-
-The AI Engineering Workflow is a **structured system for using AI agents to develop software at scale**.
-
-It is not a single AI prompt. It is an operating system for AI-assisted engineering:
-
-- Each AI agent has a defined role.
-- Every feature goes through a structured lifecycle.
-- Agents share context through a curated **AI Brain** — a set of living documents that describe your project.
-- A CLI bootstrap tool (`ai-run.sh`) assembles and exports context bundles for each agent.
+**Battle-tested:** 76 stages executed, 2,000+ tests generated, 6,400+ lines of workflow automation across a production marketplace platform.
 
 ---
 
-## Why Multi-Agent Development?
+## Quick Start
 
-Single-agent workflows hit a wall because:
+```bash
+# 1. Clone into your project
+git clone https://github.com/mohamedhamada1/ai-engineering-workflow.git .ai-engine
+cp -r .ai-engine/scripts ./scripts
+cp -r .ai-engine/.ai ./.ai
+cp -r .ai-engine/.claude ./.claude
+cp .ai-engine/flow_commands.md ./
 
-- One AI cannot hold both the design and execution context reliably.
-- Scope creep and hallucination increase when a single agent owns everything.
-- There is no adversarial review loop — the same agent that designs also implements.
+# 2. Install (one-time — sets up alias + autocompletion)
+./scripts/ai install
+source ~/.zshrc
 
-Multi-agent workflows solve this by separating concerns:
-
-| Agent    | Role                        | Strength                                |
-|----------|-----------------------------|-----------------------------------------|
-| ChatGPT  | Architect / Planner         | Long-context reasoning, design thinking |
-| Gemini   | Red Team Reviewer           | Challenging assumptions, risk detection |
-| Claude   | Repository Executor         | Grounded implementation, diff safety    |
-
----
-
-## Workflow Pipeline
-
-```mermaid
-flowchart TD
-    A[Engineer defines feature goal] --> B[ChatGPT: Architecture & Spec]
-    B --> C[Gemini: Red Team Review]
-    C -->|Approved| D[Claude: Preflight Grounding]
-    C -->|Rejected| B
-    D --> E[Claude: Implementation]
-    E --> F[Claude: Diff Review]
-    F --> G[Claude: Stabilization]
-    G --> H[Claude: PR Check]
-    H --> I[ChatGPT: Final Architecture Review]
-    I --> J[Engineer: Merge & Release]
+# 3. Start your first stage
+ai gpt                        # copy context → paste to ChatGPT for spec
+pbpaste > tmp/chatgpt.md      # save ChatGPT output
+ai start 1.0                  # import + validate + branch
+ai exec                       # execute full pipeline
+ai done 1.0                   # complete stage (merge to main)
 ```
 
 ---
 
-## Agent Roles
+## What's Included
 
-### ChatGPT — Architect
-- Defines feature scope and acceptance criteria
-- Creates the spec and implementation plan
-- Performs final architectural review before merge
+### 20 Automation Scripts (6,400+ lines)
 
-### Gemini — Gatekeeper
-- Reviews spec and plan before implementation
-- Detects scope violations, dependency risks, invariant breaks
-- Must approve before Claude executes
+| Command | What It Does |
+|---------|-------------|
+| `ai start <id>` | Import artifacts + validate spec + create branch |
+| `ai exec` | Full pipeline: preflight → implement → post-checks → commit |
+| `ai done <id>` | Complete stage: update roadmap + merge to main |
+| `ai gpt` | Generate ChatGPT context bundle (~69KB, auto-clipboard) |
+| `ai gemini` | Generate Gemini context bundle (auto-clipboard) |
+| `ai check` | Conformance verification (nested route detection) |
+| `ai review` | Post-review bundle → versioned folder |
+| `ai sync` | Reality sync snapshot |
+| `ai dashboard` | Visual stage overview with progress bar |
+| `ai status` | Current stage + git status |
+| `ai import` | Parse ChatGPT output → 4 artifact files (auto-fixes headings) |
+| `ai install` | One-time setup: alias + Zsh autocompletion + tool check |
 
-### Claude — Executor
-- Runs preflight grounding against the actual repository
-- Implements only the approved spec
-- Reviews its own diff and stabilizes failures
+Run `ai help` for the full command list with tab-autocomplete.
 
-See [`docs/AI_AGENT_ROLES.md`](docs/AI_AGENT_ROLES.md) for full details.
+### 4 Claude Code Hooks
 
----
+| Hook | Trigger | What It Does |
+|------|---------|-------------|
+| `session-start.sh` | Session start/resume | Auto-loads stage context, recent commits, spec summary |
+| `session-save.sh` | Session end | Saves session log to `.ai/sessions/` |
+| `post-compact.sh` | Context compaction | Reloads stage context after compaction |
+| `pre-commit-check.sh` | Before git commit | Scans for secrets (API keys, tokens, credentials) |
 
-## AI Brain Concept
+### Artifact Templates & Commands
 
-The **AI Brain** is a set of curated project documents that give AI agents enough context to reason safely about the codebase without scanning all source files.
-
-Key files:
-
-| File | Purpose |
-|------|---------|
-| `docs/AI_REPO_BRAIN.md` | Architecture overview, module map, invariants |
-| `docs/AI_PROJECT_CONTEXT.md` | Product purpose, team context |
-| `docs/AI_WORKFLOW.md` | Process rules for this repo |
-| `ROADMAP.md` | Canonical feature roadmap |
-| `CURRENT_STAGE.md` | Active execution state |
-| `KNOWN_ISSUES.md` | Deferred risks and open issues |
-| `TEST_REPORT.md` | Latest test verification state |
-
-See [`docs/AI_BRAIN.md`](docs/AI_BRAIN.md) for the full AI Brain architecture.
+- 7 templates (spec, plan, preflight, diff review, stabilize, PR check, task checklist)
+- 6 command files (plan feature, implement, stabilize, PR check, preflight, diff review)
+- Project config template (`.ai/config/project.conf`)
 
 ---
 
-## CLI Bootstrap
+## Multi-Agent Architecture
 
-The `ai-run.sh` script assembles context bundles for each AI agent.
+```
+┌─────────────────────────────────────────────────────┐
+│                  ENGINEER (You)                      │
+│          Define goal → Review → Merge                │
+├──────────┬──────────┬──────────┬────────────────────┤
+│ ChatGPT  │  Gemini  │  Claude  │     Automated      │
+│ Architect│Gatekeeper│ Executor │    Verification     │
+│          │          │          │                      │
+│ • Spec   │ • Review │ • Preflight  │ • Conformance  │
+│ • Plan   │ • GO/NO-GO│• Implement  │ • Reality sync │
+│ • Review │ • Edge   │ • Diff review│ • Secret scan  │
+│          │   cases  │ • Stabilize  │ • Post-review  │
+└──────────┴──────────┴──────────┴────────────────────┘
+```
+
+| Agent | Role | Strength |
+|-------|------|----------|
+| **ChatGPT** | Architect / Planner | Long-context reasoning, spec design, verification checklists |
+| **Gemini** | Red Team Reviewer | Challenge assumptions, detect missing edge cases, GO/NO-GO |
+| **Claude** | Repository Executor | Grounded implementation, diff safety, conformance verification |
+
+---
+
+## Stage Lifecycle
+
+Every feature follows this automated pipeline:
+
+```
+1. ai gpt              → ChatGPT creates spec + plan + review + implementation
+2. ai gemini            → Gemini red-team reviews (GO / NO-GO)
+3. ai start <id>        → Import artifacts + validate + branch
+4. ai exec              → Claude executes:
+                            ├── Preflight Clarification Check
+                            ├── Implementation
+                            ├── Diff Review + Spec Checklist Conformance
+                            ├── Stabilization
+                            ├── Post-review bundle (v{N}/ folder)
+                            ├── Conformance check (joins v{N}/)
+                            ├── Reality sync (joins v{N}/)
+                            └── Auto-commit + push
+5. ai review            → Share bundle with ChatGPT/Gemini
+6. ai done <id>         → Merge to main, update roadmap
+```
+
+### Pre-Start Validation
+
+`ai start` validates artifacts **before branching**:
+- Spec has `## Verification Checklist` → FAIL if missing
+- Spec has `Preflight Clarification Intent` → WARN if missing
+- Review doesn't say NO-GO → FAIL if rejected
+- Use `--force` to override
+
+### Versioned Review Artifacts
+
+```
+.ai/reviews/stage_1_0/
+├── v1/
+│   ├── post_review.md       ← first review cycle
+│   ├── conformance.md
+│   └── reality_sync.md
+├── v2/
+│   ├── post_review.md       ← after revision
+│   ├── conformance.md
+│   └── reality_sync.md
+└── stage_1_0_name.review.md  ← Gemini review (imported)
+```
+
+---
+
+## Conformance Engine
+
+The `ai check` command verifies spec-to-code alignment:
+
+- **Structural gates:** Spec has Verification Checklist, implementation has Preflight Check
+- **File detection:** Referenced files/classes exist in repo
+- **Endpoint detection:** Routes found including Ktor nested routes (`route("/parent") { post("/child") }`)
+- **Test detection:** Test files exist for referenced test classes
+- **Scope check:** Changes are within expected package boundaries
+- **Protected files:** Engine-level + project-level protected paths enforced
+
+Failures are categorized: `STRUCTURE` / `CHECKLIST` / `SCOPE` / `TEST`
+
+---
+
+## Project Configuration
+
+### `.ai/config/project.conf`
 
 ```bash
-# Export context for ChatGPT (architecture + design)
-./scripts/ai-run.sh --chatgpt
+# Protected paths (project-specific)
+PROTECTED_PATHS=packages/shared_contracts/src/main
 
-# Export context for Gemini (review)
-./scripts/ai-run.sh --gemini
+# Build system override (auto-detected if not set)
+# BUILD_SYSTEM=gradle
 
-# Load context into Claude (grounding)
-./scripts/ai-run.sh --claude
+# Context files to exclude from bundles
+# CONTEXT_EXCLUDES=BUSINESS_PLAN.md
+```
 
-# Run Claude workflow steps
-./scripts/ai-run.sh --claude-preflight
-./scripts/ai-run.sh --claude-implement
-./scripts/ai-run.sh --claude-diff-review
-./scripts/ai-run.sh --claude-stabilize
-./scripts/ai-run.sh --claude-pr-check
+### `.ai/stage_package_map.sh`
 
-# Run the full Claude pipeline in one shot
-./scripts/ai-run.sh --claude-all
+```bash
+stage_package_map() {
+  case "$1" in
+    "1.0") echo "packages/core" ;;
+    "2.*") echo "packages/feature_x" ;;
+    *) echo "" ;;
+  esac
+}
 ```
 
 ---
@@ -126,73 +188,125 @@ The `ai-run.sh` script assembles context bundles for each AI agent.
 ## Repository Structure
 
 ```
-.
-├── README.md
-├── ROADMAP.md                        # Canonical roadmap
-├── CURRENT_STAGE.md                  # Active stage execution state
-├── KNOWN_ISSUES.md                   # Open risks and deferred items
-├── TEST_REPORT.md                    # Latest test state
-│
-├── docs/
-│   ├── AI_ENGINEERING_SYSTEM.md      # Full system architecture
-│   ├── AI_WORKFLOW.md                # Feature lifecycle rules
-│   ├── AI_BRAIN.md                   # AI context system
-│   ├── AI_AGENT_ROLES.md             # Agent responsibilities
-│   └── DIAGRAMS.md                   # Mermaid architecture diagrams
+your-project/
+├── scripts/
+│   ├── ai                          # Short command wrapper (25 commands)
+│   ├── _ai                         # Zsh autocompletion
+│   ├── ai-run.sh                   # Main orchestrator
+│   ├── ai-common.sh                # Shared library (700+ lines)
+│   ├── ai-install.sh               # One-time device setup
+│   ├── ai-stage-start.sh           # Start stage (import + validate + branch)
+│   ├── ai-stage-execute.sh         # Full pipeline execution
+│   ├── ai-stage-complete.sh        # Complete stage (merge to main)
+│   ├── ai-stage-revise.sh          # Address reviewer feedback
+│   ├── ai-stage-post-review.sh     # Generate review bundle
+│   ├── ai-stage-status.sh          # Status + dashboard
+│   ├── ai-verify-stage.sh          # Build + test + artifact checks
+│   ├── ai-verify-conformance.sh    # Spec-to-code conformance
+│   ├── ai-import-chatgpt.sh        # Parse ChatGPT → 4 artifact files
+│   ├── ai-generate-reality-sync.sh # Post-stage reality snapshot
+│   ├── ai-review-bundle.sh         # State snapshot
+│   ├── ai-diff-evidence.sh         # Changes + protected file check
+│   ├── ai-update-context.sh        # Context refresh generation
+│   └── ai-engine-selftest.sh       # 26-checkpoint self-test
 │
 ├── .ai/
-│   ├── commands/
-│   │   ├── 01_plan_feature.md        # ChatGPT: generate spec + plan
-│   │   ├── 02_implement_feature.md   # Claude: implement approved plan
-│   │   ├── 03_stabilize_feature.md   # Claude: fix failures
-│   │   ├── 04_pr_check.md            # Claude: PR scope audit
-│   │   ├── 05_preflight_grounding.md # Claude: ground against real repo
-│   │   └── 06_diff_review.md         # Claude: review diff safety
-│   │
-│   └── templates/
-│       ├── spec_template.md
-│       ├── plan_template.md
-│       ├── stabilize_template.md
-│       ├── diff_review_template.md
-│       └── preflight_template.md
+│   ├── config/
+│   │   └── project.conf            # Project-specific configuration
+│   ├── stage_package_map.sh        # Stage → package mapping
+│   ├── templates/                   # 7 artifact templates
+│   ├── commands/                    # 6 command files
+│   ├── specs/                       # Stage specifications
+│   ├── plans/                       # Implementation plans
+│   ├── reviews/                     # Review artifacts (versioned v{N}/ folders)
+│   ├── implementations/            # Implementation requests
+│   └── exports/                     # Generated context bundles (gitignored)
 │
-├── scripts/
-│   └── ai-run.sh                     # CLI context bundle tool
+├── .claude/
+│   ├── settings.json               # Claude Code settings + hooks
+│   └── hooks/
+│       ├── session-start.sh         # Auto-load stage context
+│       ├── session-save.sh          # Save session log
+│       ├── post-compact.sh          # Reload after compaction
+│       └── pre-commit-check.sh      # Secret detection
 │
-└── examples/
-    ├── sample_spec.md
-    ├── sample_plan.md
-    ├── sample_current_stage.md
-    └── sample_test_report.md
+├── docs/
+│   ├── AI_WORKFLOW.md              # Process rules
+│   ├── AI_AGENT_ROLES.md           # Agent responsibilities
+│   ├── AI_REPO_BRAIN.md            # Architecture overview (you create)
+│   └── AI_PROJECT_CONTEXT.md       # Product context (you create)
+│
+├── ROADMAP.md                       # Stage roadmap
+├── CURRENT_STAGE.md                 # Active stage
+├── TEST_REPORT.md                   # Test state
+├── KNOWN_ISSUES.md                  # Risks + deferred items
+└── flow_commands.md                 # Full command reference
 ```
 
 ---
 
-## Example Feature Lifecycle
+## How to Adopt
 
-1. **Engineer** writes a one-paragraph feature goal.
-2. **ChatGPT** produces a spec and implementation plan using `01_plan_feature.md`.
-3. **Gemini** reviews the spec/plan for risks using the red team prompt.
-4. **Claude** runs preflight grounding (`05_preflight_grounding.md`) against the real repo.
-5. **Claude** implements the feature (`02_implement_feature.md`) within approved scope.
-6. **Claude** reviews its own diff (`06_diff_review.md`) for safety violations.
-7. **Claude** stabilizes any failures (`03_stabilize_feature.md`).
-8. **Claude** runs a PR scope check (`04_pr_check.md`).
-9. **ChatGPT** performs final architectural review.
-10. **Engineer** merges and updates `ROADMAP.md`.
+### New Project
+
+```bash
+# Clone the engine
+git clone https://github.com/mohamedhamada1/ai-engineering-workflow.git
+
+# Copy into your project
+cp -r ai-engineering-workflow/scripts your-project/scripts
+cp -r ai-engineering-workflow/.ai your-project/.ai
+cp -r ai-engineering-workflow/.claude your-project/.claude
+cp ai-engineering-workflow/flow_commands.md your-project/
+
+# Install
+cd your-project
+./scripts/ai install
+source ~/.zshrc
+
+# Create your project docs
+# Edit: docs/AI_REPO_BRAIN.md (your architecture)
+# Edit: docs/AI_PROJECT_CONTEXT.md (your product)
+# Edit: ROADMAP.md (your stages)
+# Edit: .ai/config/project.conf (your protected paths)
+# Edit: .ai/stage_package_map.sh (your stage → package mapping)
+```
+
+### Existing Project
+
+Same steps — the engine doesn't modify your source code. It adds workflow automation alongside your existing structure.
 
 ---
 
-## How to Adopt This System
+## Key Features
 
-1. Copy this repository structure into your project (or use it as a template).
-2. Populate the AI Brain files for your project:
-   - `docs/AI_REPO_BRAIN.md` — describe your architecture
-   - `ROADMAP.md` — list your planned stages
-   - `CURRENT_STAGE.md` — set the active stage
-3. Customize the command templates in `.ai/commands/` to match your tech stack.
-4. Set up `ai-run.sh` for your project root.
-5. Start your first feature cycle using `01_plan_feature.md`.
+| Feature | Description |
+|---------|-------------|
+| **Multi-agent chain of command** | ChatGPT → Gemini → Claude with role separation |
+| **Pre-start validation** | Validates spec quality before branching |
+| **Post-exec auto-chain** | Review + conformance + sync + auto-commit after implementation |
+| **Nested route detection** | Conformance finds Ktor/Express nested routes |
+| **Spec heading auto-fix** | Import auto-adds `## ` prefix to bare headings |
+| **Versioned review folders** | v1/, v2/, v3/ per review cycle |
+| **Visual dashboard** | Progress bar + stage counts + status icons |
+| **Secret detection** | Pre-commit hook scans for API keys, tokens, credentials |
+| **Token optimization** | Autocompact at 50% context usage |
+| **Zsh autocompletion** | Tab-complete all 25 commands |
+| **One-command install** | `ai install` sets up everything |
+
+---
+
+## Comparison
+
+| Capability | This Engine | spec-kit (GitHub) | everything-claude-code |
+|---|---|---|---|
+| Multi-agent orchestration | 4 agents, role-separated | Single agent | Single agent |
+| Spec enforcement | Verification Checklist + Conformance | Constitution + clarify | Rules files |
+| Pre-start validation | Validates before branching | None | None |
+| Post-exec auto-chain | Review + conformance + sync + commit | Manual checklist | Manual loops |
+| Artifact versioning | v1/v2/v3 folders | Flat | None |
+| Secret detection | Pre-commit hook | None | AgentShield |
+| CLI shortcuts | 25 commands + tab-complete | 2 commands | Slash commands |
 
 ---
 

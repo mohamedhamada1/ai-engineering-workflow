@@ -106,6 +106,49 @@ These constraints must be preserved throughout this feature's implementation.
 
 ---
 
+## Preflight Clarification Intent
+
+- Executor should ask questions if ambiguity affects correctness, safety, architecture, or protected boundaries.
+- Maximum grouped questions: 5
+- If unanswered, executor may proceed only with explicit assumptions when risk is acceptable (no shared_contracts, no migrations, no public API changes).
+
+---
+
+## Verification Checklist
+
+> **Quality rule:** Every checklist item must be machine-verifiable. Each item must be one of:
+> - file/artifact existence (greppable filename)
+> - endpoint/route/contract existence (METHOD /path)
+> - invariant/safety behavior (greppable keyword or pattern)
+> - test evidence (test class or test method name)
+>
+> Vague items like "implementation is correct" or "logic is robust" are not valid checklist items.
+
+### Mandatory (blocks stage completion if missing)
+
+#### Required Artifacts
+- [ ] [File/endpoint/component 1 — e.g., `VendorCockpitView.kt` exists]
+- [ ] [File/endpoint/component 2 — e.g., `GET /admin/vendors/{id}/readiness` endpoint exists]
+
+#### Core Behavior
+- [ ] [Functional requirement 1 — e.g., `ReadinessScoreCalculator` computes score from capability + availability]
+- [ ] [Functional requirement 2 — e.g., vendor list returns `operationalStatus` field]
+
+#### Safety / Invariants
+- [ ] [Constraint 1 — e.g., `shared_contracts` not modified]
+- [ ] [Constraint 2 — e.g., no new external dependencies added]
+
+#### Tests
+- [ ] [Test expectation 1 — e.g., `VendorReadinessTest.kt` exists with at least 2 test cases]
+- [ ] [Test expectation 2 — e.g., empty-state rendering test exists]
+
+### Optional / Quality (does not block, but should be addressed)
+
+- [ ] [Nice-to-have 1 — e.g., empty-state illustration renders correctly]
+- [ ] [Nice-to-have 2 — e.g., loading skeleton present on vendor detail]
+
+---
+
 ## Open Questions
 
 [List any unresolved questions or risks that should be addressed before or during implementation.]

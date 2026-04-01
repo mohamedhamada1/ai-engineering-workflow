@@ -58,6 +58,8 @@ The spec must include:
 - Files to modify (with description of change)
 - Protected files (must not be touched)
 - Core invariants
+- **Preflight Clarification Intent** (mandatory — see below)
+- **Verification Checklist** (mandatory — see below)
 - Open questions
 
 ---
@@ -82,6 +84,43 @@ The plan must include:
 
 ---
 
+## Step 3.5: Required Spec Sections
+
+You must include these two mandatory sections in every spec:
+
+### Preflight Clarification Intent
+
+```markdown
+## Preflight Clarification Intent
+- Executor should ask questions if ambiguity affects correctness, safety, architecture, or protected boundaries.
+- Maximum grouped questions: [number, default 5]
+- If unanswered, executor may proceed only with explicit assumptions when risk is acceptable.
+```
+
+This tells the executor (Claude) when and how to ask questions before coding.
+
+### Verification Checklist
+
+```markdown
+## Verification Checklist
+
+### Required Artifacts
+- [ ] [file/endpoint/component expected]
+
+### Core Behavior
+- [ ] [functional requirement]
+
+### Safety / Invariants
+- [ ] [constraint that must hold]
+
+### Tests
+- [ ] [test coverage expectation]
+```
+
+This becomes the conformance target. Every item must be machine-verifiable (greppable file names, endpoint paths, test class names).
+
+---
+
 ## Step 4: Self-Check
 
 Before handing off to Gemini, verify:
@@ -92,6 +131,9 @@ Before handing off to Gemini, verify:
 - [ ] The plan's steps map one-to-one with the spec's scope.
 - [ ] No invariants are violated by the proposed design.
 - [ ] Out-of-scope items are explicitly listed.
+- [ ] **Preflight Clarification Intent section exists.**
+- [ ] **Verification Checklist section exists with items in all 4 categories.**
+- [ ] **Every checklist item maps to at least one plan step.**
 
 ---
 

@@ -19,6 +19,33 @@ Your job is to execute the implementation plan step by step.
 
 ---
 
+## Preflight Clarification Check (MANDATORY — emit BEFORE any code)
+
+Before writing any code, you MUST emit a Preflight Clarification Check:
+
+```
+## Preflight Clarification Check
+
+Status: READY | READY_WITH_ASSUMPTIONS | NEEDS_CLARIFICATION | BLOCKED
+
+### Questions
+(grouped, high-impact only — max per spec's Preflight Clarification Intent)
+
+### Assumptions
+(explicit list)
+
+### Risk If Assumptions Are Wrong
+(what breaks or degrades)
+```
+
+You may ask questions only when ambiguity materially affects correctness, safety, architecture, public contracts, migrations, or tests.
+
+Group questions together. Prefer explicit assumptions over low-value interruption.
+
+Do NOT skip this section. Do NOT jump directly into coding.
+
+---
+
 ## Rules
 
 ### Scope Rules (Non-Negotiable)
@@ -84,7 +111,9 @@ When stopping: do not attempt to fix out-of-scope issues. Report what you found 
 
 After implementation, provide:
 
-1. **Summary of changes** — one bullet per file changed, describing what was done.
-2. **Verification results** — output of format, analyze, and test commands.
-3. **Unexpected findings** — anything discovered during implementation that was not in the plan.
-4. **Next step** — confirm that diff review is the next action.
+1. **Preflight Clarification Check** — the check you emitted before coding (for the record).
+2. **Summary of changes** — one bullet per file changed, describing what was done.
+3. **Verification results** — output of format, analyze, and test commands.
+4. **Spec Checklist Status** — for each item in the spec's Verification Checklist, report: satisfied / partial / missing.
+5. **Unexpected findings** — anything discovered during implementation that was not in the plan.
+6. **Next step** — confirm that diff review is the next action.
